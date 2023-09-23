@@ -1,0 +1,22 @@
+{
+  "name": "fastatest",
+  "version": "1.0.0",
+  "description": "A test from FastaMoney",
+  "main": "server.js",
+  "scripts": {
+    "test": "jest supertest",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "helmet": "^7.0.0",
+    "morgan": "^1.10.0",
+    "mysql2": "^3.6.1",
+    "path": "^0.12.7",
+    "pg": "^8.11.3",
+    "sequelize": "^6.33.0"
+  }
+}
