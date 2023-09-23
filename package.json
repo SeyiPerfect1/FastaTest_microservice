@@ -5,18 +5,28 @@
   "main": "server.js",
   "scripts": {
     "test": "jest supertest",
-    "start": "node server.js"
+    "start": "node server.js",
+    "migrate": "sequelize db:migrate",
+    "undo-migrate": "sequelize db:migrate:undo",
+    "seed": "sequelize db:seed:all",
+    "undo-seed": "sequelize db:seed:undo:all"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dayjs": "^1.11.10",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "helmet": "^7.0.0",
+    "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "mysql2": "^3.6.1",
+    "otp-generator": "^4.0.1",
     "path": "^0.12.7",
     "pg": "^8.11.3",
-    "sequelize": "^6.33.0"
+    "pino": "^8.15.1",
+    "sequelize": "^6.33.0",
+    "sequelize-cli": "^6.6.1",
+    "uuid": "^9.0.1"
   }
 }
