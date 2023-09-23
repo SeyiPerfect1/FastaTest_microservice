@@ -5,32 +5,37 @@ module.exports = {
     await queryInterface.createTable("Wallets", {
       id: {
         type: Sequelize.UUID,
-        defaultValue: Sequelize.fn('uuid_generate_v4'), 
+        defaultValue: Sequelize.fn("uuid_generate_v4"),
         primaryKey: true,
-        allowNull: false
+        allowNull: false,
       },
       balance: {
         type: Sequelize.FLOAT,
         allowNull: false,
         validate: {
-          min: 0, 
+          min: 0,
         },
       },
-      ownerId: {
+      wallet_id: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      user_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
           model: "Users",
           key: "id",
         },
-        onUpdate: "CASCADE", 
-        onDelete: "CASCADE", 
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
       },
-      createdAt: {
+      created_at: {
         allowNull: false,
         type: Sequelize.DATE,
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
         type: Sequelize.DATE,
       },

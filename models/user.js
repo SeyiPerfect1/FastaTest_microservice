@@ -1,6 +1,7 @@
 "use strict";
 const { Model } = require("sequelize");
-const { v4: uuidv4 } = require('uuid'); 
+const { v4: uuidv4 } = require("uuid");
+const bcrypt = require("bcrypt");
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
@@ -11,16 +12,22 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // Define associations here
-      User.hasOne(models.Wallet, { foreignKey: "userId" });
-      User.hasMany(models.Donation, { foreignKey: "donorId" });
-      User.hasMany(models.Donation, { foreignKey: "beneficiaryId" });
+      User.hasOne(models.Wallet, { foreignKey: "user_id" });
+      User.hasMany(models.Donation, { foreignKey: "donor_id" });
+      User.hasMany(models.Donation, { foreignKey: "beneficiary_id" });
+    }
+
+    // Define a pre-hook to hash the password before saving
+    static async beforeCreate(user) {
+      const hashedPassword = await bcrypt.hash(user.password, process.env.HASH_SALT); // Hash the password with a salt of 10 rounds
+      user.password = hashedPassword;
     }
   }
   User.init(
     {
       id: {
         type: DataTypes.UUID,
-        defaultValue: () => uuidv4(), 
+        defaultValue: () => uuidv4(),
         primaryKey: true,
       },
       firstName: {
