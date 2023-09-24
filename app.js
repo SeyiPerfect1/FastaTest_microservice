@@ -1,55 +1,48 @@
-const express =  require('express');
-const logger = require('morgan');
-const path = require('path');
-// import { fileURLToPath } from 'url';
+const express = require("express");
+const logger = require("morgan");
+const path = require("path");
+const AuthRoutes = require("./src/routes/auth.route");
+const WalletRoutes = require("./src/routes/wallet.route");
+const DonationRoutes = require("./src/routes/donation.route");
 
-// const __filename = fileURLToPath(import.meta.url);
-
-// const __dirname = path.dirname(__filename);
-
-const helmet = require('helmet');
-
+const helmet = require("helmet");
 
 const app = express();
 
-// //  use passport middleware
-// require('./src/middlewares/auth');
+//  middleware to serve public files
+app.use(express.static(path.join(__dirname, "./src/public")));
+
+//  use body parsr middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 // security middleware
 app.use(helmet());
 
 //  use logger middleware
-app.use(logger('dev'));
-
-//  middleware to serve public files
-app.use(express.static(path.join(__dirname, './src/public')));
-
-//  use body parsr middleware
-app.use(express.json);
-app.use(express.urlencoded({ extended: false }));
+app.use(logger("dev"));
 
 //  set view engine
-app.set('view engine', 'ejs');
-app.set('views', 'views');
+app.set("view engine", "ejs");
+app.set("views", "views");
 
 // //  add routes
-// app.use('/accounts', authRouter);
-// app.use('/posts', postRouter);
-// app.use('/posts', commentRouter);
-// app.use('/', userRouter);
+app.use("/api/auth", AuthRoutes);
+app.use("/api/wallet", WalletRoutes);
+app.use("/api/donations", DonationRoutes);
 
 //  homepage route
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
   res.status(200).json({
-    message: 'welcome home'
+    message: "welcome home",
   });
 });
 
 //  unavailable resources route
-app.get('*', (req, res, next) => {
+app.get("*", (req, res, next) => {
   try {
     res.status(404).json({
-      message: 'No page found, check url!!!'
+      message: "No page found, check url!!!",
     });
   } catch (error) {
     next(error);
@@ -57,10 +50,10 @@ app.get('*', (req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-    console.log(err);
-    res.status(500).json({
-        error: err.message
-    })
+  console.log(err);
+  res.status(500).json({
+    error: err.message,
+  });
 });
 
 module.exports = app;
