@@ -14,14 +14,6 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // Define associations here
       User.hasOne(models.Wallet, { foreignKey: "user_id" });
-      User.hasMany(models.Donation, { foreignKey: "donor_id" });
-      User.hasMany(models.Donation, { foreignKey: "beneficiary_id" });
-    }
-
-    // Define a pre-hook to hash the password before saving
-    static async beforeCreate(user) {
-      const hashedPassword = await bcrypt.hash(user.password, process.env.HASH_SALT); // Hash the password with a salt of 10 rounds
-      user.password = hashedPassword;
     }
 
     // Define a pre-hook to hash the password before saving
@@ -91,13 +83,25 @@ module.exports = (sequelize, DataTypes) => {
       transaction_pin: {
         type: DataTypes.STRING,
       },
-      donation_count: {
-        type: DataTypes.INTEGER,
-      },
     },
     {
       sequelize,
       modelName: "User",
+      hooks: {
+        // Define a pre-hook to hash the password before saving
+        async beforeCreate(user) {
+          try {
+            const hashedPassword = await bcrypt.hash(
+              user.password,
+              +process.env.HASH_SALT
+            );
+            user.password = hashedPassword;
+          } catch (error) {
+            console.error("Error in before create hook:", error);
+            throw error;
+          }
+        },
+      },
     }
   );
   return User;

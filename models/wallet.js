@@ -11,6 +11,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Wallet.hasMany(models.Donation, { foreignKey: "donor_id" });
+      Wallet.hasMany(models.Donation, { foreignKey: "beneficiary_id" });
       Wallet.belongsTo(models.User, { as: "User", foreignKey: "user_id" });
     }
   }
@@ -24,12 +26,13 @@ module.exports = (sequelize, DataTypes) => {
       balance: {
         type: DataTypes.FLOAT,
         allowNull: false,
+        defaultValue: 0.0,
         validate: {
           min: 0, // Minimum wallet balance can be zero or more
         },
       },
       wallet_id: {
-        type: DataTypes.String,
+        type: DataTypes.STRING,
         allowNull: false,
         unique: true,
       },

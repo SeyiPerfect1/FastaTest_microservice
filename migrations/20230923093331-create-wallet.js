@@ -12,6 +12,7 @@ module.exports = {
       balance: {
         type: Sequelize.FLOAT,
         allowNull: false,
+        defaultValue: 0.0,
         validate: {
           min: 0,
         },
@@ -31,11 +32,11 @@ module.exports = {
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
       },
-      created_at: {
+      createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
       },
-      updated_at: {
+      updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
       },

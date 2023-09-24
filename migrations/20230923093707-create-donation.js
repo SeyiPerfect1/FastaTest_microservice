@@ -5,7 +5,7 @@ module.exports = {
     await queryInterface.createTable("Donations", {
       id: {
         type: Sequelize.UUID,
-        defaultValue: Sequelize.fn('uuid_generate_v4'), 
+        defaultValue: Sequelize.fn("uuid_generate_v4"),
         primaryKey: true,
         allowNull: false,
       },
@@ -20,7 +20,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: "Users",
+          model: "Wallests",
           key: "id",
         },
         onUpdate: "CASCADE",
@@ -30,17 +30,17 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: "Users",
+          model: "Wallets",
           key: "id",
         },
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
       },
-      created_at: {
+      createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
       },
-      updated_at: {
+      updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
       },
