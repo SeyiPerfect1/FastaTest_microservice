@@ -2,6 +2,7 @@
 const { Model } = require("sequelize");
 const { v4: uuidv4 } = require("uuid");
 const bcrypt = require("bcrypt");
+require("dotenv").config();
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
@@ -22,6 +23,12 @@ module.exports = (sequelize, DataTypes) => {
       const hashedPassword = await bcrypt.hash(user.password, process.env.HASH_SALT); // Hash the password with a salt of 10 rounds
       user.password = hashedPassword;
     }
+
+    // Define a pre-hook to hash the password before saving
+    static async beforeCreate(user) {
+      const hashedPassword = await bcrypt.hash(user.password, +process.env.HASH_SALT); 
+      user.password = hashedPassword;
+    }
   }
   User.init(
     {
@@ -30,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: () => uuidv4(),
         primaryKey: true,
       },
-      firstName: {
+      first_name: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
@@ -40,7 +47,7 @@ module.exports = (sequelize, DataTypes) => {
           },
         },
       },
-      lastName: {
+      last_name: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
