@@ -6,8 +6,20 @@ const WalletRoutes = require("./src/routes/wallet.route");
 const DonationRoutes = require("./src/routes/donation.route");
 
 const helmet = require("helmet");
+const csp = require("helmet-csp");
 
 const app = express();
+
+// Set up CSP headers
+app.use(
+  csp({
+    directives: {
+      defaultSrc: ["'self'"], // Allow content from the same origin
+      scriptSrc: ["'self'", "trusted-cdn.com"], // Allow inline scripts and scripts from a trusted CDN
+      styleSrc: ["'self'", "trusted-cdn.com"], // Allow inline styles and styles from a trusted CDN
+    },
+  })
+);
 
 //  middleware to serve public files
 app.use(express.static(path.join(__dirname, "./src/public")));
