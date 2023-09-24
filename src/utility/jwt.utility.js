@@ -37,7 +37,7 @@ const signToken = async (data) => {
   return token;
 };
 
-module.export = {
-    ValidateJwt,
-    signToken
-}
+module.exports = {
+  ValidateJwt,
+  signToken,
+};

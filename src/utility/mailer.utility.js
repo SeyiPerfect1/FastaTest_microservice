@@ -1,13 +1,11 @@
-import nodemailer from "nodemailer";
-import path from "path";
-import dotenv from "dotenv";
-import log from "./logger";
-dotenv.config({ path: path.resolve(__dirname, "../.env") });
+const nodemailer = require("nodemailer");
+require("dotenv").config();
+const log = require("./logger");
 
 const transport = nodemailer.createTransport({
   service: `${process.env.MAIL_SERVICE}`,
   host: `${process.env.MAIL_HOST}`,
-  port: `${+process.env.MAIL_PORT}`,
+  port: +`${process.env.MAIL_PORT}`,
   secure: true,
   auth: {
     user: process.env.AUTH_EMAIL,
@@ -15,13 +13,7 @@ const transport = nodemailer.createTransport({
   },
 });
 
-const send_email = async (
-  email,
-  subject,
-  message,
-  beneficiary = null,
-  amount = null
-) => {
+const send_email = async (email, subject, message) => {
   try {
     return await transport.sendMail({
       from: process.env.AUTH_EMAIL,
