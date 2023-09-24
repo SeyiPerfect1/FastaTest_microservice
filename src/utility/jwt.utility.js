@@ -1,7 +1,7 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
-export const ValidateJwt = async (req) => {
+const ValidateJwt = async (req) => {
   const signature = req.get("Authorization");
 
   if (signature) {
@@ -29,10 +29,15 @@ const genToken = async (data) => {
   return token;
 };
 
-export const signToken = async (data) => {
+const signToken = async (data) => {
   const token = await genToken({
     ...data,
   });
 
   return token;
+};
+
+module.exports = {
+  ValidateJwt,
+  signToken,
 };

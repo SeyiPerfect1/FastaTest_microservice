@@ -1,10 +1,22 @@
 const otpGenerator = require("otp-generator");
 
-export const GenCode = async () => {
-  return await otpGenerator.generate(32, {
+const GenCode = async () => {
+  return await otpGenerator.generate(12, {
     upperCaseAlphabets: false,
     specialChars: false,
   });
 };
 
-module.exports = GenCode;
+const isUUID = (uuid) => {
+  let s = "" + uuid;
+
+  s = s.match(
+    /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i
+  );
+  if (s === null) {
+    return false;
+  }
+  return true;
+};
+
+module.exports = { GenCode, isUUID };
