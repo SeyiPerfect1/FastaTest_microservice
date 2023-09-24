@@ -1,17 +1,17 @@
-// import { connectToMongoDB } from ('./src/db/dbConfig');
 const app = require("./app.js");
-require('dotenv').config()
-const db = require('./models/index.js')
+require("dotenv").config();
+const db = require("./models/index.js");
 
 const PORT = process.env.PORT || 8000;
 
 // an async function to run migrations
 async function runMigrations() {
   try {
-    await db.sequelize.sync(); // This will apply pending migrations
-    console.log('Database migrations completed successfully.');
+    // apply pending migrations
+    await db.sequelize.sync();
+    console.log("Database migrations completed successfully.");
   } catch (error) {
-    console.error('Error running database migrations:', error);
+    console.error("Error running database migrations:", error);
   }
 }
 
@@ -21,6 +21,3 @@ runMigrations().then(() => {
     console.log(`server is listening at http://localhost:${PORT}`);
   });
 });
-
-
-
