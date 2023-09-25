@@ -1,58 +1,61 @@
 # Fasta <br>
-As part of [AltschoolAfrica](https://altschoolafrica.com) second semester examination, this is an api for a **Bloging app**. <hr>
+This is an api for a **a web service using Node.js that can be deployed to AWS, API can be consumed from any client.**. <hr>
 
 ## Requirements <br>
- 1. User should be able to register
- 2. User should be able to login with Passport using JWT
- 3. Token expiration should be 1hour
- 4. Implement basic auth
- 5. Logged in and not Logged in User should be able to get published posts
- 6. Queried posts should be paginated to default of 20 posts per page
- 7. The owner of the blog should be able to update post's state from draft to published
- 8. posts should be searchable byauthor, title and tags
- 9. Posts should be orderable by read count, reading time and timestamp
- 10. Logged in and not Logged in User should be able to get a published post
- 11. Logged in Users should be able to create post, update and delete posts
- 12. Logged In users should be able to get their post(s) in draft or published state
- 13. Should implement algorithm for calculating reading time
- 14. Test application  <hr/>
+1. Be deployed on https://render.com
+2. Allow user create an account with basic user information
+3. Allow a user login
+4. Allow a user have a wallet
+5. Allow a user create a transaction PIN
+6. Allow a user create a donation to a fellow user (beneficiary)
+7. Allow a user check how many donations he/she has made
+8. Have ability to a special thank you message via email or sms or any communication channel, if they make two(2) or more donations.
+9. Allow a user view all donation made in a given period of time.
+10. Allow a user view a single donation made to a fellow user (beneficiary)  <hr/>
 ## Setup <br>
  * Install NodeJS, MongoDB
  * pull this repo
  * update env with example.env
  * Download all dependecies using npm install
- * run npm run start <hr>
+ * run npm run start
+ * run npm test:load <hr>
 ## Base URL
  * [Link to api](https://memoirblog.onrender.com/) <hr>
 ## Models <br>
-### users
+### Users
 | field	| data_type	| constraints | validation |
 | -------- | ---------| -----------| ----------------------|
-| id | Object | required | None |
-| username | string	| required | unique |
-| firstname |	string | required | unique |
-| lastname |	string | required | unique |
+| id | UUID | required | None |
+| first_name |	string | required |
+| last_name |	string | required |
 | email |	string | required | unique, email must conform to email (example: user1@gmail.com) |
 | password |	string | required | pasword must contain at least one uppercase, one lowercase, one symbol, and must be at least 8 |
-| intro | string | optional | None |
-| urlToImage | string | optional | None |
-| posts | array | got saved automatically when a new post is created | None | <br>
-### posts
+| confirmation_code | string | optional | None |
+| status | string: enum(Pending, Active)| optional | default: Pending |
+| transaction_pin | string | optional | length must be 4 | 
+| createdAt | Date | optional | Get added automatically | 
+| updatedAt | Date | optional | Get added automatically | <br>
+### Wallets
 | field	| data_type	| constraints | validation |
 | -------- | ---------| -----------| ----------------------|
-| id | Object | required | None |
-| author | object	| get saved automatically when a new post is created | None |
-| description |	string | optional | unique |
-| tags |	array | optional | None |
-| body |	string | required | None |
-| readCount |	Number | increament automaticaly by 1 when the post is queried, default: 0  | None |
-| readTime |	Number | got saved automatically when new post is created | None |
-| state | string | required, default: state | enum: ["state, "published"] |
-| publishedAt | Date | got saved when post state is updated | None |
-| slug | string | got save by concatenating | None | <hr>
+| id | UUID | required | None |
+| balance |	float | required: default to 0.0 | min of 0 |
+| wallet_id |	UUID | required | foreign key to User model as Wallet;|
+| createdAt | Date | optional | Get added automatically | 
+| updatedAt | Date | optional | Get added automatically | <br>
+### Donations
+| field	| data_type	| constraints | validation |
+| -------- | ---------| -----------| ----------------------|
+| id | UUID | required | None |
+| amount |	float | required: default to 0.0 | min of 0 |
+| donor_id |	UUID | required | foreign key to Wallet model as Donor |
+| beneficiary_id |	UUID | required | foreign key to Wallet model as Beneficiary |
+| createdAt | Date | optional | Get added automatically | 
+| updatedAt | Date | optional | Get added automatically | <hr>
+
 ## APIs <br>
-### Signup User <br> 
- * Route: /accounts/signup
+### Register User <br> 
+ * Route: /api/auth/register
  * Method: POST
  * Body:
  ```
@@ -61,25 +64,31 @@ As part of [AltschoolAfrica](https://altschoolafrica.com) second semester examin
   "password": "Password1",
   "firstname": "jon",
   "lastname": "doe",
-  "username": 'jon_doe",
  }
  ```
  * Responses: Success
+ * Status: 201
   ```
   {
-    message: 'Signup successful',
-    user: {
-        "email": "doe@example.com",
-        "password": "Password1",
-        "firstname": "jon",
-        "lastname": "doe",
-        "username": 'jon_doe",
-        "posts": []
-     }
+    "msg": "User created successfully! Please check your mail",
+  }
+  ```
+ * Responses: Failure
+ * Status: 400
+  ```
+  {
+    "msg": "User already exists",
+  }
+  ```
+ * Responses: Failure
+ * Status: 500
+  ```
+  {
+    "msg": "Something went wrong! Please try again",
   }
   ```
 ### Login User
- * Route: /accounts/login
+ * Route: /api/auth/login
  * Method: POST
  * Body:
  ```
@@ -89,248 +98,425 @@ As part of [AltschoolAfrica](https://altschoolafrica.com) second semester examin
  }
  ```
  * Responses: Success
+ * Status: 200
  ```
  {
-   "token": "exampletoken&8ofiwhb.fburu276r4ufhwu4.o82uy3rjlfwebj",
+  "message": "User login successfully"
+  "id": "14rfd-jehd65w-jwejojw-diwhdiw",
+  "email": "doe@example.com",
+  "firstname": "jon",
+  "lastname": "doe",
+  "token": "exampletoken&8ofiwhb.fburu276r4ufhwu4.o82uy3rjlfwebj",
  }
  ```
+ * Responses: Failure
+ * Status: 400
+  ```
+  {
+    "message": "your email is yet to be verified",
+  }
+  ```
+ * Responses: Failure
+ * Status: 401
+  ```
+  {
+    "message": "Unable to login, Invalid email or password",
+  }
+  ```
+ * Responses: Failure
+ * Status: 500
+  ```
+  {
+    "message": "An Error Occured",
+  }
+  ```
+### confirm User
+ * Route: /api/auth/confirm/{ confirmation_code }
+ * Method: GET
+ * Headers:
+    - path: confirmation_code
+ * Body: None
+ * Responses: Success
+ * Status: 200
+ ```
+ {
+  "message": "User login successfully"
+ }
+ ```
+ * Responses: Failure
+ * Status: 400
+  ```
+  {
+    "msg": "Verification Successful.You can now login",
+  }
+  ```
+ * Responses: Failure
+ * Status: 500
+  ```
+  {
+    "msg": "Something went wrong",
+  }
+  ```
+### Resend confirmation mail
+ * Route: /api/auth/resend-confirm
+ * Method: POST
+ * Body:
+ ```
+ {
+   "email": 'doe@example.com",
+ }
+ ```
+ * Responses: Success
+ * Status: 200
+ ```
+ {
+  "msg": "Verification link sent, kindly check your mail"
+ }
+ ```
+ * Responses: Failure
+ * Status: 400
+  ```
+  {
+    "msg": "User does not exist",
+  }
+  ```
+ * Responses: Failure
+ * Status: 401
+  ```
+  {
+    "msg": "user already verified",
+  }
+  ```
+ * Responses: Failure
+ * Status: 500
+  ```
+  {
+    "msg": "Something went wrong! Please try again", error,
+  }
+  ```
  ### Home Page
- * Route: /
+ * Route: /api
  * Method: GET
  * Header
    - Authorization: None
  * Responses: Success
+ * Status: 200
  ```
  {
    "message": "Welcome home",
  }
  ```
-### Create Post
- * Route: /posts
+### Create wallet
+ * Route: /
+ * Method: POST
+ * Header
+   - Authorization: Bearer {token}
+ * Body: None
+ * Responses: Success
+ * Status: 201
+ ```
+ {
+  "message": "wallet created successfully!",
+  "wallet" : {
+                "id": "14rfd-jehd65w-jwejojw-diwhdiw",
+                "balance": "2",
+                "user_id": "eufhb-gehgbuw-iwejojw-3iwhdiw",
+ }
+}
+ ```
+ * Responses: Failure
+ * Status: 400
+  ```
+  {
+    "message": "wallet failed to create",
+  }
+  ```
+ * Responses: Failure
+ * Status: 401
+  ```
+  {
+    "message": "user already has a wallet",
+  }
+  ```
+ * Responses: Failure
+ * Status: 500
+  ```
+  {
+    "message": "Error creating wallet",
+  }
+  ```
+### Get wallet
+ * Route: /api/wallet
+ * Method: GET
+ * Header
+   - Authorization: Bearer {token}
+ * Body: None
+ * Responses: Success
+ * Status: 200
+ ```
+ {
+  "message": "wallet retrieved successfully!",
+  "wallet" : {
+                "id": "14rfd-jehd65w-jwejojw-diwhdiw",
+                "balance": "2",
+                "user_id": "eufhb-gehgbuw-iwejojw-3iwhdiw",
+                "user": {
+                            "id": "eufhb-gehgbuw-iwejojw-3iwhdiw",
+                            "email": "doe@example.com",
+                            "firstname": "jon",
+                            "lastname": "doe"
+}
+                
+ }
+}
+ ```
+ * Responses: Failure
+ * Status: 400
+  ```
+  {
+    "message": "user has no wallet yet",
+  }
+  ```
+ * Responses: Failure
+ * Status: 500
+  ```
+  {
+    "message": "Error retrieving wallet",
+  }
+  ```
+### Create Transaction Pin
+ * Route: /api/wallet/create_pin
  * Method: POST
  * Header
    - Authorization: Bearer {token}
  * Body:
  ```
  {
-   "title": "Lorem Ipsum",
-   "description": "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...",
-   "body": "What is Lorem Ipsum?
-           Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,    when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-   "tags" "Children, Education, Sport"
+   "transaction_pin": "5786",
  }
  ```
  * Responses: Success
+ * Status: 201
  ```
  {
-   "message": "post created successfully",
-   "title": "Lorem Ipsum",
-   "slug": "Lorem-Ipsum-6f5ejfjr8hfhrurfurfh83"
- }
+  "message": "Transaction PIN created successfully",                
+}
  ```
-### Get post     
- *//returns only published post*
- * Route: /posts/:slug        
+ * Responses: Failure
+ * Status: 401
+  ```
+  {
+    "error": "You do not have a wallet page yet, create one",
+  }
+  ```
+ * Responses: Failure
+ * Status: 404
+  ```
+  {
+    "error": "User not found",
+  }
+  ```
+ * Responses: Failure
+ * Status: 500
+  ```
+  {
+    "error": ""Error creating transaction PIN"",
+  }
+  ```
+### Verify Beneficiary Wallet
+ * Route: /api/donations/verify_beneficiary
  * Method: GET
  * Header
-   - Authorization: None
- * Responses: Success(if slug match post) 
+   - Authorization: Bearer {token}
+ * Body:
  ```
  {
-   "message": {
-        "author": {
-            "firstname": "jon",
-            "lastname": "doe",
-            "username": "jon_doe",
-            "email": "jondoe@mail.com",
-        },
-        "title": "ea molestias quasi exercitationem repellat qui ipsa sit aut",
-        "tags": [
-            "Anker56",
-            "Travel",
-            "Photography"
-        ],
-        "body": "et iusto sed quo iure\nvoluptatem occaecati omnis eligendi aut et iusto sed quo iure\nvoluptatem occaecati omnis eligendi aut et iusto sed quo iure\nvoluptatem occaecati omnis eligendi aut et iusto sed quo iure\nvoluptatem occaecati omnis eligendi aut et iusto sed quo iure\nvoluptatem occaecati omnis eligendi aut et iusto sed quo iure\nvoluptatem occaecati omnis el
-        "readCount": 1,
-        "readingTime": 5,
-        "state": "published",
-        "description": "ea molestias quasi exercitationem repellat qui ipsa sit aut",
-        "slug": "ea-molestias-quasi-exercitationem-repellat-qui-ipsa-sit-aut-636718b62bf8c8fa24517068"
-    }
+   "beneficiary_wallet_id": "fg5786flenfh",
  }
  ```
-  * Responses: Not Found
- ```
- {
-   "message": "post not found"
- }
- ```
-### Get Posts     
- *//returns only published posts*
- * Route: /posts
- * Method: GET
- * Header:
-   - Authorization: None
- * Query params:
-   - author = "jon_doe"  *//query with username*
-   - title = "lorem ipsum"  *//query post titles and matches any post that has lorem ipsum in its title*
-   - tags  *//eg tags=Children+Sports+Fitness*
-   - start date  *//start=2022/11/01,end=2022/11/05*
- * order_by(sort): 
-   - default(publishedAt: desc}  
-   - readCount
-   - readingTime
- * page = (default: 1) *//can select any e.g page = 3*
- * limit = (default: 20) *//can limit to any value e.g limit = 5*
- * *// example url:  http://localhost:4000/author=john_doe&tags=Children+Sports+Fitness&title=Lorem+ipsum&order_by=publishedAt+desc,readCount+asc,readingTime+desc*
  * Responses: Success
+ * Status: 200
  ```
  {
-   "message": {
-        "author": {
-            "firstname": "jon",
-            "lastname": "doe",
-            "username": "jon_doe",
-            "email": "jondoe@mail.com",
-        },
-        "title": "ea molestias quasi exercitationem repellat qui ipsa sit aut",
-        "tags": [
-            "Anker56",
-            "Travel",
-            "Photography"
-        ],
-        "body": "et iusto sed quo iure\nvoluptatem occaecati omnis eligendi aut et iusto sed quo iure\nvoluptatem occaecati omnis eligendi aut et iusto sed quo iure\nvoluptatem occaecati omnis eligendi aut et iusto sed quo iure\nvoluptatem occaecati omnis eligendi aut et iusto sed quo iure\nvoluptatem occaecati omnis eligendi aut et iusto sed quo iure\nvoluptatem occaecati omnis el
-        "readCount": 1,
-        "readingTime": 5,
-        "state": "published",
-        "description": "ea molestias quasi exercitationem repellat qui ipsa sit aut",
-        "slug": "ea-molestias-quasi-exercitationem-repellat-qui-ipsa-sit-aut-636718b62bf8c8fa24517068"
-    }
- }......
+  "beneficiary":  {
+                     "id": "eufhb-gehgbuw-iwejojw-3iwhdiw",
+                     "email": "doe@example.com",
+                     "firstname": "jon",
+                     "lastname": "doe",
+                  }          
+}
  ```
- ### Update Post
- *// updates the state of the blog from draft to published or uodate post many contents*
- *//req.user must be owner of post*
- * Route: /post/:slug
+ * Responses: Failure
+ * Status: 400
+  ```
+  {
+    "message": "you cannot make donations to yourself",
+  }
+  ```
+ * Responses: Failure
+ * Status: 404
+  ```
+  {
+    "message": "Beneficiary wallet not found.",
+  }
+  ```
+ * Responses: Failure
+ * Status: 500
+  ```
+  {
+    "message": "Internal server error.",
+  }
+  ```
+### Confirm Donation
+ * Route: /api/donations/confirm
  * Method: PUT
  * Header
    - Authorization: Bearer {token}
  * Body:
  ```
- { 
-   "state" "publushed"
-   *//or update other post metadata at the same time*
-   "title": "Lorem Ipsum",
-   "description": "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...",
-   "body": "What is Lorem Ipsum?
-           Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,    when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-   "tags" "Children, Education, Sport"
+ {
+   "beneficiary_wallet_id": "fg5786flenfh",
+   "amount": "2",
+   "transaction_pin": "5467",
  }
  ```
  * Responses: Success
+ * Status: 200
  ```
  {
-   "message": "post updated successfully",
- }
+  "message": "donation successful"
+  "donation":  {
+                     "id": "eufhb-gehgbuw-iwejojw-3iwhdiw",
+                     "amount": "2",
+                     "beneficiary_id": "eufhb-gehgbuw-iwejojw-3iwhdiw",
+                     "donor_id": "eufhb-gehgbuw-iwejojw-3iwhdiw",
+                  }          
+}
  ```
-### Delete Post
- *//req.user must be owner of post*
- * Route: /post/:slug
- * Method: DELETE
- * Header
-   - Authorization: Bearer {token}
- * Responses: Success
- ```
- {
-   "message": "post deleted successfully",
- }
- ```
- ### Get User's Post(s) and Details
- *//shows only published posts of req.user!=logged in user*
- *//shows both published and draft posts if req.user === logged in user*
- *//if req.user === logged in user*, user can filter their posts by state using this endpoint: ?state=published to filter user posts by state*
- * Route: /:username
+ * Responses: Failure
+ * Status: 404
+  ```
+  {
+    "message": "Beneficiary wallet not found.",
+  }
+  ```
+ * Responses: Failure
+ * Status: 402
+  ```
+  {
+    "message": "you don't have a transction pin",
+  }
+  ```
+ * Responses: Failure
+ * Status: 401
+  ```
+  {
+    "message": "you do not have enough to donate",
+  }
+  ```
+ * Responses: Failure
+ * Status: 500
+  ```
+  {
+    "message": "Internal server error.",
+  }
+  ```
+### Get User Single Donation
+ * Route: /api/donations/{ donation_id }
  * Method: GET
  * Header
    - Authorization: Bearer {token}
+   - path: donation_id
+ * Body: None
  * Responses: Success
+ * Status: 200
  ```
  {
-    "message": "user1 has 2 post(s)",
-    "post": [
-        {
-            "_id": "636718b62bf8c8fa24517067",
-            "author": {
-                "_id": "6367116e679244141511f084",
-                "firstname": "userA",
-                "lastname": "userZ",
-                "username": "user1",
-                "email": "user1@mail.com",
-            },
-            "title": "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
-            "tags": [
-                "Anker60",
-                "Soundcore60"
-            ],
-            "body": "quia et suscipit\nsuscipit recusandae consequuntur expedita et quia et suscipit\nsuscipit recusandae consequuntur expedita et quia et suscipit\nsuscipit recusandae consequuntur expedita et quia et suscipit\nsuscipit recusandae consequuntur expedita et quia et suscipit\nsuscipit recusandae consequuntur expedita et quia et suscipit\nsuscipit recusandae consequuntur expedita et quia et suscipit\nsuscipit recusandae consequuntur expedita et quia et 
-            "readCount": 0,
-            "readingTime": 7,
-            "state": "published",
-            "publishedAt": "2022-11-06T02:15:18.841Z",
-            "createdAt": "2022-11-06T02:15:18.841Z",
-            "updatedAt": "2022-11-06T02:15:18.981Z",
-            "description": "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
-            "slug": "sunt-aut-facere-repellat-provident-occaecati-excepturi-optio-reprehenderit-636718b62bf8c8fa24517067"
-        },
-        {
-            "_id": "636718b62bf8c8fa24517069",
-            "author": {
-                "_id": "6367116e679244141511f084",
-                "firstname": "userA",
-                "lastname": "userZ",
-                "username": "user1",
-                "email": "user1@mail.com",
-            },
-            "title": "This is our time. it has arrived",
-            "tags": [
-                "Family",
-                "Health"
-            ],
-            "body": "ullam et saepe reiciendis voluptatem adipisci\nsit amet autem ullam et saepe reiciendis voluptatem adipisci\nsit amet autem ullam et saepe reiciendis voluptatem adipisci\nsit amet autem ullam et saepe reiciendis voluptatem adipisci\nsit amet autem ullam et saepe reiciendis voluptatem adipisci\nsit amet autem ullam et saepe reiciendis voluptatem adipisci\nsit amet autem ullam et saepe reiciendis voluptatem adipisci\nsit amet autem ullam et saepe reiciendis voluptatem 
-            "readCount": 2,
-            "readingTime": 6,
-            "state": "draft",
-            "createdAt": "2022-11-06T02:15:18.841Z",
-            "updatedAt": "2022-11-06T02:15:18.984Z",
-            "description": "eum et est occaecati",
-            "slug": "eum-et-est-occaecati-636718b62bf8c8fa24517069"
-        },
+  "message": "you don't have a transction pin",
+  "donation":  {
+                     "id": "eufhb-gehgbuw-iwejojw-3iwhdiw",
+                     "amount": "2",
+                     "beneficiary_id": "eufhb-gehgbuw-iwejojw-3iwhdiw",
+                     "donor_id": "eufhb-gehgbuw-iwejojw-3iwhdiw",
+              "Wallet":  {
+                     "id": "eufhb-gehgbuw-iwejojw-3iwhdiw",
+                     "User":  {
+                     "id": "eufhb-gehgbuw-iwejojw-3iwhdiw",
+                  }    
+                  }             
+                  }          
+}
  ```
- ### Update User
- *//allows users to update their profiles(req.user.email must equal profile.email)*
- *//user cannot update password and email through this route*
- * Route: /update-profile
- * Method: PUT
+ * Responses: Failure
+ * Status: 400
+  ```
+  {
+    "message": "Invalid donation ID",
+  }
+  ```
+ * Responses: Failure
+ * Status: 404
+  ```
+  {
+    "message": "Error retrieving donation",
+  }
+  ```
+ * Responses: Failure
+ * Status: 500
+  ```
+  {
+    "message": "Internal server error.",
+  }
+  ```
+### Get User Donations
+ * Route: /api/donations
+ * Method: GET
  * Header
    - Authorization: Bearer {token}
+ * Query params:
+   - start date  *//start_date=2022/11/01
+   - end_date *//end_date=2022/11/01
+   - order_by(sort): order_by=amount+DESC,createdAt+ASC
+   - page = (default: 1) *//can select any e.g page = 3*
+   - limit = (default: 10) *//can limit to any value e.g limit = 5*
+   // example url:  http://localhost:4000/api/donations?page=2&limit=8&order_by=amount+DESC,createdAt+ASC&start_date=2022/11/01&end_date=2022/11/01
  * Responses: Success
+ * Status: 200
  ```
  {
-   "message": "user details updated successfully",
- }
+  "message": "Donations queried successfully!",
+  "total_donations": "36",
+  "page": "2",
+  "limit": "8",
+  "donations":  [{
+                     "id": "eufhb-gehgbuw-iwejojw-3iwhdiw",
+                     "email": "doe@example.com",
+                     "firstname": "jon",
+                     "lastname": "doe",
+                  }].....          
+}
  ```
-  ### Delete User
- */allows users to delete their profiles(req.user.email must equal profile.email)*
- * Route: /delete-user
- * Method: DELETE
- * Header
-   - Authorization: Bearer {token}
- * Responses: Success
- ```
- {
-   "message": "user deleted successfully",
- }
- ```
+ * Responses: Failure
+ * Status: 401
+  ```
+  {
+    "message": "you don't have a wallet yet",
+  }
+  ```
+ * Responses: Failure
+ * Status: 404
+  ```
+  {
+    "message": "You haven't made any donation"",
+  }
+  ```
+ * Responses: Failure
+ * Status: 500
+  ```
+  {
+    "message": "Error retrieving donation",
+  }
+  ```
  
 ...
 
