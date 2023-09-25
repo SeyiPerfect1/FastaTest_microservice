@@ -20,7 +20,7 @@ This is an api for a **a web service using Node.js that can be deployed to AWS, 
  * run npm run start
  * run npm test:load <hr>
 ## Base URL
- * [Link to api](https://memoirblog.onrender.com/) <hr>
+ * [Link to api](https://fasta-test.onrender.com/) <hr>
 ## Models <br>
 ### Users
 | field	| data_type	| constraints | validation |
