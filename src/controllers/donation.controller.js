@@ -16,6 +16,7 @@ const { isUUID } = require("../utility/user.utility");
  */
 const VerifyBeneficiaryWallet = async (req, res) => {
   try {
+
     const { beneficiary_wallet_id } = req.body;
 
     // Verify the beneficiary's wallet and retrieve user details
@@ -57,9 +58,8 @@ const VerifyBeneficiaryWallet = async (req, res) => {
  */
 const ConfirmDonation = async (req, res) => {
   try {
-    const { beneficiary_wallet_id, amount, transaction_pin } = req.body;
 
-    // Validate the input data (you can add more validation here)
+    const { beneficiary_wallet_id, amount, transaction_pin } = req.body;
 
     // Verify the beneficiary's wallet and retrieve user details
     const beneficiary_wallet = await WalletModel.findOne({
@@ -135,8 +135,8 @@ const ConfirmDonation = async (req, res) => {
 
       await send_email(donor_wallet.User.email, message[1], message[0]);
     }
-    console.log(donor_wallet.User.email);
-    res.status(201).json({ message: "donation successful", donation });
+
+    res.status(200).json({ message: "donation successful", donation });
   } catch (error) {
     log.error(error);
     res.status(500).json({ message: "Internal server error." });
@@ -163,7 +163,6 @@ const GetDonations = async (req, res) => {
     };
 
     const query_options = await build_query(req.query, where_clause);
-    console.log(query_options[0]);
 
     const { count: total_donations, rows: donations } =
       await DonationModel.findAndCountAll(query_options[0]);
@@ -193,6 +192,7 @@ const GetDonations = async (req, res) => {
  */
 const GetSingleDonation = async (req, res) => {
   try {
+
     const { donation_id } = req.params;
 
     if (!isUUID(donation_id)) {

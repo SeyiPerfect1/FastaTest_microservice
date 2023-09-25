@@ -15,8 +15,10 @@ const { signToken } = require("../utility/jwt.utility");
 
 const RegisterUser = async (req, res) => {
   try {
+
     const { first_name, last_name, password, email } = req.body;
     // check if user already exists in the database
+
     const existUser = await UserModel.findOne({
       where: { email: email.toLowerCase() },
     });
@@ -46,6 +48,7 @@ const RegisterUser = async (req, res) => {
       throw new Error("Something went wrong! Please try again");
     }
   } catch (error) {
+    log.error(error);
     res.status(500).send({ msg: "Something went wrong! Please try again" });
   }
 };
@@ -58,6 +61,7 @@ const RegisterUser = async (req, res) => {
  */
 const VerifyUser = async (req, res) => {
   try {
+
     const { confirmation_code } = req.params;
     const confirm_user = await UserModel.findOne({ confirmation_code });
     if (confirm_user === null) {
@@ -88,7 +92,9 @@ const VerifyUser = async (req, res) => {
  */
 const ResendVerificionLink = async (req, res) => {
   try {
+
     const { email } = req.body;
+
     const user = await UserModel.findOne({ email: email.toLowerCase() });
     if (!user) {
       res.status(400).send({ msg: "User does not exist" });
@@ -134,6 +140,7 @@ const ResendVerificionLink = async (req, res) => {
  */
 
 const UserLogin = async (req, res) => {
+
   // retrieve the email and password from the request body
   const { email, password } = req.body;
 

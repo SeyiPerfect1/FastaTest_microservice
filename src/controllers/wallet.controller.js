@@ -60,6 +60,11 @@ const GetWallet = async (req, res) => {
         },
       ],
     });
+
+    if (!wallet) {
+      return res.status(400).json({ message: "user has no wallet yet" });
+    }
+
     res.status(200).json({ message: "wallet created successfully!", wallet });
   } catch (error) {
     log.error(error);
@@ -75,6 +80,9 @@ const GetWallet = async (req, res) => {
  */
 const CreateTransactionPin = async (req, res) => {
   try {
+    // validate input
+    create_transaction_pin.parse(req.body);
+
     const { transaction_pin } = req.body;
 
     // Find the user by userId

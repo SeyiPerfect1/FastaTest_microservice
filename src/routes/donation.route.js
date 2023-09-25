@@ -6,11 +6,16 @@ const {
   GetDonations,
   GetSingleDonation,
 } = require("../controllers/donation.controller");
+const validation = require("../middlewares/validation.middleware")
+const {
+  verify_beneficiary_wallet,
+  confirm_donation,
+} = require("../validation/donation.validation");
 
 const router = express.Router();
 
-router.put("/confirm", Authenticate, ConfirmDonation);
-router.get("/verify_beneficiary", Authenticate, VerifyBeneficiaryWallet);
+router.put("/confirm", validation(confirm_donation), Authenticate, ConfirmDonation);
+router.get("/verify_beneficiary", validation(verify_beneficiary_wallet), Authenticate, VerifyBeneficiaryWallet);
 router.get("/:donation_id", Authenticate, GetSingleDonation);
 router.get("/", Authenticate, GetDonations);
 

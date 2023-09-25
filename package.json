@@ -9,7 +9,8 @@
     "migrate": "sequelize db:migrate",
     "undo-migrate": "sequelize db:migrate:undo",
     "seed": "sequelize db:seed:all",
-    "undo-seed": "sequelize db:seed:undo:all"
+    "undo-seed": "sequelize db:seed:undo:all",
+    "test:load": "artillery run load-test.yaml"
   },
   "author": "",
   "license": "ISC",
@@ -31,6 +32,11 @@
     "pino-pretty": "^10.2.0",
     "sequelize": "^6.33.0",
     "sequelize-cli": "^6.6.1",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "zod": "^3.22.2"
+  },
+  "devDependencies": {
+    "artillery": "^2.0.0-37",
+    "forever": "^4.0.3"
   }
 }
