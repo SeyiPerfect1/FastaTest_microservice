@@ -16,58 +16,101 @@ config:
       - "http.response_time.p99": 50
 
 scenarios:
-  - name: "Sign up flow"
+  - name: "Sign up"
     flow:
-      - get:
-          url: "/"
-      - think: 1
-      - get:
-          url: "/api/auth/register"
-      - think: 2
       - post:
           url: "/api/auth/register"
-          afterResponse:
-            - "logHeaders"
-            - "logBody"
           json:
-            first_name: "{{ first_name }}"
-            last_name: "{{ last_name }}"
-            email: "{{ email }}"
-            password: "{{ password }}"
+            first_name: "John"
+            last_name: "Doe"
+            email: "Dovie32@example.net"
+            password: "@RwkWspKUKy1"
           capture:
-            - json: "$.first_name"
-              as: "firstname"
-            - json: "$.last_name"
-              as: "lastname"
             - json: "$.email"
               as: "email"
-            - json: "$.id"
-              as: "id"
+            - json: "$.confirmation_code"
+              as: "confirmation_code"
+      - get:
+          url: "/api/auth/confirm/{{ confirmation_code }}"
+      - post:
+          url: "/api/auth/resend-confirm"
+          json:
+            email: "Dovie32@example.net"
       - post:
           url: "/api/auth/login"
-          afterResponse:
-            - "logHeaders"
-            - "logBody"
           json:
-            email: "{{ email }}"
-            password: "{{ password }}"
+            email: "Dovie32@example.net"
+            password: "Dovie32@example.net"
+
+
+  - name: "wallet"
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "Dovie32@example.net"
+            password: "Dovie32@example.net"
           capture:
-            - json: "$.first_name"
-              as: "firstname"
-            - json: "$.last_name"
-              as: "lastname"
-            - json: "$.email"
-              as: "email"
-            - json: "$.id"
-              as: "id"
             - token: "$.token"
               as: "token"
+      - post:
+          url: "/api/wallet"
+          headers:
+            Authorization: "Bearer {{ token }}"
+      - post:
+          url: "/api/wallet/create_pin"
+          headers:
+            Authorization: "Bearer {{ token }}"
+          json:
+            transaction_pin: "3456"
+      - get:
+          url: "/api/wallet"
+          headers:
+            Authorization: "Bearer {{ token }}"
 
-
+  - name: "donation"
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "Dovie32@example.net"
+            password: "Dovie32@example.net"
+          capture:
+            - token: "$.token"
+              as: "token"
+      - get:
+          url: "/api/wallet"
+          headers:
+            Authorization: "Bearer {{ token }}"
+          capture:
+            - beneficiary_id: "$.beneficiary_id"
+              as: "beneficiary_id"
+      - get:
+          url: "/api/donation/verify_beneficiary"
+          json:
+            email: "{{ beneficiary_id }}"
+          capture:
+            - wallet_id : "$.wallet_id"
+              as: "beneficiary_id"
+      - post:
+          url: "/api/wallet"
+          headers:
+            Authorization: "Bearer {{ token }}"
+      - get:
+          url: "/api/wallet"
+          headers:
+            Authorization: "Bearer {{ token }}"
+          capture:
+            - wallet_id : "$.wallet_id"
+              as: "donor_id"
+      - get:
+          url: "/api/donation/{{ donor_id }}"
+      - get:
+          url: "/api/donation"
 
 hooks:
   - beforeRequest: "timestamp"
-  - afterResponse: "timestamp" 
+  - afterResponse: "timestamp"
 
   # Calculate and log the p99 response time
   - function: "calculateP99"
