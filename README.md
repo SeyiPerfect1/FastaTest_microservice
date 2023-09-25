@@ -62,8 +62,8 @@ This is an api for a **a web service using Node.js that can be deployed to AWS, 
  {
   "email": "doe@example.com",
   "password": "Password1",
-  "firstname": "jon",
-  "lastname": "doe",
+  "first_name": "jon",
+  "last_name": "doe",
  }
  ```
  * Responses: Success
