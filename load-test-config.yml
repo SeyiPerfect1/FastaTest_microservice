@@ -1,0 +1,82 @@
+config:
+  target: https://fasta-test.onrender.com
+  plugins:
+    ensure: {}
+  phases:
+    - duration: 30
+      arrivalRate: 100
+      name: "sustained load"
+  payload:
+    path: "./auth.csv"
+    fields:
+      - "email"
+      - "password"
+  ensure:
+    thresholds:
+      - "http.response_time.p99": 50
+
+scenarios:
+  - name: "Sign up flow"
+    flow:
+      - get:
+          url: "/"
+      - think: 1
+      - get:
+          url: "/api/auth/register"
+      - think: 2
+      - post:
+          url: "/api/auth/register"
+          afterResponse:
+            - "logHeaders"
+            - "logBody"
+          json:
+            first_name: "{{ first_name }}"
+            last_name: "{{ last_name }}"
+            email: "{{ email }}"
+            password: "{{ password }}"
+          capture:
+            - json: "$.first_name"
+              as: "firstname"
+            - json: "$.last_name"
+              as: "lastname"
+            - json: "$.email"
+              as: "email"
+            - json: "$.id"
+              as: "id"
+      - post:
+          url: "/api/auth/login"
+          afterResponse:
+            - "logHeaders"
+            - "logBody"
+          json:
+            email: "{{ email }}"
+            password: "{{ password }}"
+          capture:
+            - json: "$.first_name"
+              as: "firstname"
+            - json: "$.last_name"
+              as: "lastname"
+            - json: "$.email"
+              as: "email"
+            - json: "$.id"
+              as: "id"
+            - token: "$.token"
+              as: "token"
+
+
+
+hooks:
+  - beforeRequest: "timestamp"
+  - afterResponse: "timestamp" 
+
+  # Calculate and log the p99 response time
+  - function: "calculateP99"
+    capture: "p99"
+    using:
+      compare: "jsonpath"
+      expect: "$.timestamp"
+      jsonpath: "$[*].timestamp"
+      percentile: 99
+
+  # Log the p99 response time
+  - log: "p99: {{ p99 }} ms"

@@ -10,7 +10,9 @@
     "undo-migrate": "sequelize db:migrate:undo",
     "seed": "sequelize db:seed:all",
     "undo-seed": "sequelize db:seed:undo:all",
-    "test:load": "artillery run load-test.yaml"
+    "test:load": "artillery run load-test-config.yml",
+    "test:load:bash": "load-test.sh",
+    "start:forever": "forever start server.js"
   },
   "author": "",
   "license": "ISC",
@@ -37,6 +39,7 @@
   },
   "devDependencies": {
     "artillery": "^2.0.0-37",
+    "artillery-plugin-ensure": "^1.2.0",
     "forever": "^4.0.3"
   }
 }
