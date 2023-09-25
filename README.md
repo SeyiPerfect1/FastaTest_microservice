@@ -29,7 +29,7 @@ This is an api for a **a web service using Node.js that can be deployed to AWS, 
 | first_name |	string | required |
 | last_name |	string | required |
 | email |	string | required | unique, email must conform to email (example: user1@gmail.com) |
-| password |	string | required | pasword must contain at least one uppercase, one lowercase, one symbol, and must be at least 8 |
+| password |	string | required | pasword must contain at least one uppercase, one lowercase, one digit, one symbol, and must be at least 8 |
 | confirmation_code | string | optional | None |
 | status | string: enum(Pending, Active)| optional | default: Pending |
 | transaction_pin | string | optional | length must be 4 | 
@@ -61,7 +61,7 @@ This is an api for a **a web service using Node.js that can be deployed to AWS, 
  ```
  {
   "email": "doe@example.com",
-  "password": "Password1",
+  "password": "@Password1",
   "first_name": "jon",
   "last_name": "doe",
  }
@@ -93,7 +93,7 @@ This is an api for a **a web service using Node.js that can be deployed to AWS, 
  * Body:
  ```
  {
-   "password": "Password1",
+   "password": "@Password1",
    "email": 'doe@example.com",
  }
  ```
