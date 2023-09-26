@@ -70,7 +70,9 @@ const RegisterUser = async (req, res) => {
 const VerifyUser = async (req, res) => {
   try {
     const { confirmation_code } = req.params;
-    const confirm_user = await UserModel.findOne({ confirmation_code });
+    const confirm_user = await UserModel.findOne({
+      where: { confirmation_code: confirmation_code },
+    });
     if (confirm_user === null) {
       res.status(400).send({ msg: "Invalid Verification Code" });
       return;
@@ -101,7 +103,9 @@ const ResendVerificionLink = async (req, res) => {
   try {
     const { email } = req.body;
 
-    const user = await UserModel.findOne({ email: email.toLowerCase() });
+    const user = await UserModel.findOne({
+      where: { email: email.toLowerCase() },
+    });
     if (!user) {
       res.status(400).send({ msg: "User does not exist" });
       return;
