@@ -1,17 +1,25 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
+const log = require("../utility/logger");
 
 const ValidateJwt = async (req) => {
-  const signature = req.get("Authorization");
+  try {
+    const signature = req.get("Authorization");
 
-  if (signature) {
-    const payload = jwt.verify(signature.split(" ")[1], process.env.JWT_SECRET);
-    req.user = payload;
+    if (signature) {
+      const payload = jwt.verify(
+        signature.split(" ")[1],
+        process.env.JWT_SECRET
+      );
+      req.user = payload;
 
-    return true;
+      return true;
+    }
+
+    return false;
+  } catch (error) {
+    log.error(error);
   }
-
-  return false;
 };
 
 const genToken = async (data) => {
@@ -30,11 +38,15 @@ const genToken = async (data) => {
 };
 
 const signToken = async (data) => {
-  const token = await genToken({
-    ...data,
-  });
+  try {
+    const token = await genToken({
+      ...data,
+    });
 
-  return token;
+    return token;
+  } catch (error) {
+    log.error(error);
+  }
 };
 
 module.exports = {
