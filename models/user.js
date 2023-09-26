@@ -49,7 +49,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       confirmation_code: {
         type: DataTypes.STRING,
-        unique: true,
       },
       status: {
         type: DataTypes.STRING,
