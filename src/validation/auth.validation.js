@@ -18,7 +18,7 @@ const user_registration = z.object({
       .string()
       .regex(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]+$/, {
         required_error:
-          "Password must contain at least a character, sn alphabet, and a number",
+          "Password must contain at least a character, an alphabet, and a number",
       })
       .refine((value) => value.trim() !== "", {
         required_error: "password cannot be empty",

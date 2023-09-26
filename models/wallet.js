@@ -25,15 +25,10 @@ module.exports = (sequelize, DataTypes) => {
       },
       balance: {
         type: DataTypes.FLOAT,
-        allowNull: false,
         defaultValue: 0.0,
-        validate: {
-          min: 0, // Minimum wallet balance can be zero or more
-        },
       },
       wallet_id: {
         type: DataTypes.STRING,
-        allowNull: false,
         unique: true,
       },
     },

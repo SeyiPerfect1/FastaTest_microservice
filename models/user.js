@@ -18,7 +18,10 @@ module.exports = (sequelize, DataTypes) => {
 
     // Define a pre-hook to hash the password before saving
     static async beforeCreate(user) {
-      const hashedPassword = await bcrypt.hash(user.password, +process.env.HASH_SALT); 
+      const hashedPassword = await bcrypt.hash(
+        user.password,
+        +process.env.HASH_SALT
+      );
       user.password = hashedPassword;
     }
   }
@@ -31,42 +34,18 @@ module.exports = (sequelize, DataTypes) => {
       },
       first_name: {
         type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notEmpty: {
-            args: true,
-            msg: "Please enter your first name",
-          },
-        },
       },
       last_name: {
         type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notEmpty: {
-            args: true,
-            msg: "Please enter your last name",
-          },
-        },
       },
       email: {
         type: DataTypes.STRING,
-        allowNull: false,
         unique: true,
-        validate: {
-          len: [1, 255],
-          isEmail: true, // Use Sequelize's built-in email validation
-        },
         lowercase: true, // Convert email to lowercase before saving
         trim: true,
       },
       password: {
         type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          len: [8, 255],
-          is: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]+$/, // regular expression to enforce password complexity
-        },
       },
       confirmation_code: {
         type: DataTypes.STRING,
@@ -74,11 +53,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       status: {
         type: DataTypes.STRING,
-        allowNull: false,
         defaultValue: "Pending",
-        validate: {
-          isIn: [["Pending", "Active"]],
-        },
       },
       transaction_pin: {
         type: DataTypes.STRING,

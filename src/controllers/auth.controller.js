@@ -1,4 +1,5 @@
 const UserModel = require("../../models").User;
+const WalletModel = require("../../models/").Wallet;
 const { GenCode } = require("../utility/user.utility");
 const send_email = require("../utility/mailer.utility");
 const { confirmation_message } = require("../utility/msg.utility");
@@ -15,7 +16,6 @@ const { signToken } = require("../utility/jwt.utility");
 
 const RegisterUser = async (req, res) => {
   try {
-
     const { first_name, last_name, password, email } = req.body;
     // check if user already exists in the database
 
@@ -35,6 +35,13 @@ const RegisterUser = async (req, res) => {
       confirmation_code: await GenCode(),
     });
 
+    const wallet_id = await GenCode();
+
+    await WalletModel.create({
+      user_id: user.id,
+      wallet_id: wallet_id,
+    });
+
     //send confirmation code to user's email
     const message = confirmation_message(user);
     let ress = await send_email(user?.email, message[1], message[0]);
@@ -42,6 +49,7 @@ const RegisterUser = async (req, res) => {
     if (ress !== null) {
       res.status(201).json({
         msg: "User created successfully! Please check your mail",
+        wallet: wallet_id,
       });
     } else {
       res.status(400);
@@ -61,7 +69,6 @@ const RegisterUser = async (req, res) => {
  */
 const VerifyUser = async (req, res) => {
   try {
-
     const { confirmation_code } = req.params;
     const confirm_user = await UserModel.findOne({ confirmation_code });
     if (confirm_user === null) {
@@ -92,7 +99,6 @@ const VerifyUser = async (req, res) => {
  */
 const ResendVerificionLink = async (req, res) => {
   try {
-
     const { email } = req.body;
 
     const user = await UserModel.findOne({ email: email.toLowerCase() });
@@ -140,7 +146,6 @@ const ResendVerificionLink = async (req, res) => {
  */
 
 const UserLogin = async (req, res) => {
-
   // retrieve the email and password from the request body
   const { email, password } = req.body;
 

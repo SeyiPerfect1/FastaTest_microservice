@@ -6,40 +6,6 @@ const WalletModel = require("../../models/").Wallet;
 const UserModel = require("../../models").User;
 
 /**
- * @description create wallet
- * @method POST
- * @route /api/wallet
- * @access public
- */
-const CreateWallet = async (req, res) => {
-  try {
-    const user_wallet = await WalletModel.findOne({
-      where: { user_id: req.user.id },
-    });
-
-    if (user_wallet) {
-      return res.status(401).json({ message: "user already has a wallet" });
-    }
-
-    const wallet_id = await GenCode();
-
-    const wallet = await WalletModel.create({
-      user_id: req.user.id,
-      wallet_id: wallet_id,
-    });
-
-    if (!wallet) {
-      return res.status(400).json({ message: "wallet failed to create" });
-    }
-
-    res.status(201).json({ message: "wallet created successfully!", wallet });
-  } catch (error) {
-    log.error(error);
-    res.status(500).send({ message: "'Error creating wallet'" });
-  }
-};
-
-/**
  * @description get wallet
  * @method GET
  * @route /api/wallet
@@ -80,8 +46,6 @@ const GetWallet = async (req, res) => {
  */
 const CreateTransactionPin = async (req, res) => {
   try {
-    // validate input
-    create_transaction_pin.parse(req.body);
 
     const { transaction_pin } = req.body;
 
@@ -92,14 +56,10 @@ const CreateTransactionPin = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const user_wallet = await WalletModel.findOne({
-      where: { user_id: req.user.id },
-    });
-
-    if (!user_wallet) {
+    if (user.transaction_pin) {
       return res
         .status(401)
-        .json({ message: "You do not have a wallet page yet, create one" });
+        .json({ message: "You already have a transaction pin" });
     }
 
     // Update the user's transactionPin
@@ -118,7 +78,6 @@ const CreateTransactionPin = async (req, res) => {
 };
 
 module.exports = {
-  CreateWallet,
   GetWallet,
   CreateTransactionPin,
 };
