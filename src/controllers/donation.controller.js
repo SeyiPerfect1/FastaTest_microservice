@@ -16,7 +16,6 @@ const { isUUID } = require("../utility/user.utility");
  */
 const VerifyBeneficiaryWallet = async (req, res) => {
   try {
-
     const { beneficiary_wallet_id } = req.body;
 
     // Verify the beneficiary's wallet and retrieve user details
@@ -25,10 +24,15 @@ const VerifyBeneficiaryWallet = async (req, res) => {
       include: {
         model: UserModel,
         as: "User",
-      },
-      attributes: {
         attributes: {
-          exclude: ["password", "transaction_pin", "created_at", "updated_at"],
+          exclude: [
+            "password",
+            "transaction_pin",
+            "confirmation_code",
+            "status",
+            "createdAt",
+            "updatedAt",
+          ],
         },
       },
     });
@@ -58,7 +62,6 @@ const VerifyBeneficiaryWallet = async (req, res) => {
  */
 const ConfirmDonation = async (req, res) => {
   try {
-
     const { beneficiary_wallet_id, amount, transaction_pin } = req.body;
 
     // Verify the beneficiary's wallet and retrieve user details
@@ -192,7 +195,6 @@ const GetDonations = async (req, res) => {
  */
 const GetSingleDonation = async (req, res) => {
   try {
-
     const { donation_id } = req.params;
 
     if (!isUUID(donation_id)) {
@@ -216,8 +218,8 @@ const GetSingleDonation = async (req, res) => {
         },
       ],
     });
-
-    if (donation.User.id !== req.user.id) {
+    console.log(donation)
+    if (donation.Donor.User.id !== req.user.id) {
       return res
         .status(401)
         .json({ message: "you are not the owner of this donation" });
