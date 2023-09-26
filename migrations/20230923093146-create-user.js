@@ -28,7 +28,6 @@ module.exports = {
       },
       confirmation_code: {
         type: Sequelize.STRING,
-        unique: true,
       },
       status: {
         type: Sequelize.STRING,
