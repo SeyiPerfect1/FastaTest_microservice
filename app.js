@@ -4,6 +4,9 @@ const path = require("path");
 const AuthRoutes = require("./src/routes/auth.route");
 const WalletRoutes = require("./src/routes/wallet.route");
 const DonationRoutes = require("./src/routes/donation.route");
+const fs = require("fs");
+const winston = require("winston");
+const { createLogger, format, transports } = winston;
 
 const helmet = require("helmet");
 const csp = require("helmet-csp");
@@ -31,8 +34,47 @@ app.use(express.urlencoded({ extended: false }));
 // security middleware
 app.use(helmet());
 
-//  use logger middleware
-app.use(logger("dev"));
+if (process.env.NODE_ENV === "production") {
+  // Logging configuration
+  const accessLogger = createLogger({
+    level: "info",
+    format: format.combine(format.timestamp(), format.json()),
+    transports: [
+      new transports.File({ filename: "access.log", level: "info" }),
+    ],
+  });
+
+  const errorLogger = createLogger({
+    level: "error",
+    format: format.combine(format.timestamp(), format.json()),
+    transports: [
+      new transports.File({ filename: "error.log", level: "error" }),
+    ],
+  });
+
+  // Create a stream for Morgan to pipe logs to Winston and encryption
+  const morganStream = {
+    write: (message) => {
+      if (message.includes("error")) {
+        // Log error messages to errorLogger
+        errorLogger.error(message.trim());
+      } else {
+        // Log non-error messages to accessLogger
+        accessLogger.info(message.trim());
+      }
+    },
+  };
+
+  //  use logger middleware
+  // log all requests to access.log
+  app.use(
+    logger("common", {
+      stream: morganStream,
+    })
+  );
+} else {
+  app.use(logger("dev"));
+}
 
 //  set view engine
 app.set("view engine", "ejs");
