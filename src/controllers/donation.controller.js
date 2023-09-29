@@ -87,13 +87,13 @@ const ConfirmDonation = async (req, res) => {
 
     if (donor_wallet.User.transaction_pin === null) {
       return res
-        .status(402)
+        .status(400)
         .json({ message: "you don't have a transction pin" });
     }
 
     if (donor_wallet.balance < +amount || donor_wallet.balance == 0) {
       return res
-        .status(401)
+        .status(400)
         .json({ message: "you do not have enough to donate" });
     }
 
@@ -103,7 +103,7 @@ const ConfirmDonation = async (req, res) => {
       donor_wallet.User.transaction_pin
     );
     if (!is_transaction_pin_valid) {
-      return res.status(403).json({ message: "Invalid transaction pin." });
+      return res.status(400).json({ message: "Invalid transaction pin." });
     }
 
     // Create the donation
@@ -158,9 +158,6 @@ const GetDonations = async (req, res) => {
       where: { user_id: req.user.id },
     });
 
-    if (!wallet) {
-      return res.status(401).json({ message: "you don't have a wallet yet" });
-    }
     const where_clause = {
       donor_id: wallet.id,
     };
@@ -221,7 +218,7 @@ const GetSingleDonation = async (req, res) => {
     console.log(donation)
     if (donation.Donor.User.id !== req.user.id) {
       return res
-        .status(401)
+        .status(400)
         .json({ message: "you are not the owner of this donation" });
     }
 

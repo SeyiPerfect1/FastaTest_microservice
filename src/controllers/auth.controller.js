@@ -112,7 +112,7 @@ const ResendVerificionLink = async (req, res) => {
     }
 
     if (user.status === "Active") {
-      return res.status(401).json({
+      return res.status(400).json({
         msg: "user already verified",
       });
     }
@@ -127,7 +127,7 @@ const ResendVerificionLink = async (req, res) => {
       });
       return;
     } else {
-      return res.status(403).json({
+      return res.status(400).json({
         msg: "Something went wrong! Email not sent, Please try again",
       });
     }
@@ -155,14 +155,14 @@ const UserLogin = async (req, res) => {
 
   try {
     if (!email || !password) {
-      res.status(401).send({ message: "Kindly fill all required information" });
+      res.status(400).send({ message: "Kindly fill all required information" });
     }
     // find the email and check if they exist.
     const user = await UserModel.findOne({ where: { email: email } });
 
     if (!user) {
       return res
-        .status(401)
+        .status(400)
         .json({ message: "Unable to login, Invalid email or  password" });
     }
 
@@ -177,7 +177,7 @@ const UserLogin = async (req, res) => {
     const check_password = await bcrypt.compare(password, user.password);
     if (!check_password) {
       return res
-        .status(401)
+        .status(400)
         .json({ message: "Unable to login, Invalid email or  password" });
     }
 

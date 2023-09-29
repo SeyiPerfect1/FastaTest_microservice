@@ -19,9 +19,7 @@ const confirm_donation = z.object({
       .refine((value) => value.trim() !== "", {
         required_error: "beneficairy wallet id cannot be empty",
       }),
-    amount: z.string().refine((value) => value.trim() !== "", {
-      required_error: "amount wallet id cannot be empty",
-    }),
+    amount: z.coerce.number().positive(),
     transaction_pin: z
       .string()
       .length(4, {
