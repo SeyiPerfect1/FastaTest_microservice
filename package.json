@@ -6,10 +6,6 @@
   "scripts": {
     "test": "jest supertest",
     "start": "node server.js",
-    "migrate": "sequelize db:migrate",
-    "undo-migrate": "sequelize db:migrate:undo",
-    "seed": "sequelize db:seed:all",
-    "undo-seed": "sequelize db:seed:undo:all",
     "test:load": "artillery run load-test-config.yml",
     "test:load:bash": "load-test.sh",
     "start:forever": "forever start server.js"
@@ -17,30 +13,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^5.1.1",
-    "dayjs": "^1.11.10",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "express-http-proxy": "^2.0.0",
     "helmet": "^7.0.0",
     "helmet-csp": "^3.4.0",
-    "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
-    "mysql2": "^3.6.1",
-    "nodemailer": "^6.9.5",
-    "otp-generator": "^4.0.1",
     "path": "^0.12.7",
-    "pg": "^8.11.3",
     "pino": "^8.15.1",
     "pino-pretty": "^10.2.0",
-    "sequelize": "^6.33.0",
-    "sequelize-cli": "^6.6.1",
-    "uuid": "^9.0.1",
-    "winston": "^3.10.0",
-    "zod": "^3.22.2"
-  },
-  "devDependencies": {
-    "artillery": "^2.0.0-37",
-    "artillery-plugin-ensure": "^1.2.0",
-    "forever": "^4.0.3"
+    "winston": "^3.10.0"
   }
 }

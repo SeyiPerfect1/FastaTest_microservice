@@ -1,14 +1,13 @@
 const express = require("express");
 const logger = require("morgan");
 const path = require("path");
+const AuthRoutes = require("./Routes/auth.route");
 const fs = require("fs");
 const winston = require("winston");
 const { createLogger, format, transports } = winston;
 
 const helmet = require("helmet");
 const csp = require("helmet-csp");
-
-const proxy = require("express-http-proxy");
 
 const app = express();
 
@@ -79,10 +78,8 @@ if (process.env.NODE_ENV === "production") {
 app.set("view engine", "ejs");
 app.set("views", "views");
 
-//  add routes
-app.use("/api/auth", proxy(`http://localhost${process.env.USERS_PORT}`));
-app.use("/api/wallet", proxy(`http://localhost${process.env.WALLETS_PORT}`));
-app.use("/api/donations", proxy(`http://localhost${process.env.DONATIONS_PORT}`));
+// //  add routes
+app.use("/api/auth", AuthRoutes);
 
 //  homepage route
 app.get("/", (req, res) => {

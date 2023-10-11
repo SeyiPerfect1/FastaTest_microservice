@@ -1,9 +1,8 @@
-const UserModel = require("../../models").User;
-const WalletModel = require("../../models/").Wallet;
+const UserModel = require("../db/models").User;
 const { GenCode } = require("../utility/user.utility");
 const send_email = require("../utility/mailer.utility");
 const { confirmation_message } = require("../utility/msg.utility");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const log = require("../utility/logger");
 const { signToken } = require("../utility/jwt.utility");
 

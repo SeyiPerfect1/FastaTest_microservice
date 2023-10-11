@@ -11,14 +11,14 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Donation.belongsTo(models.Wallet, {
-        as: "Donor",
-        foreignKey: "donor_id",
-      });
-      Donation.belongsTo(models.Wallet, {
-        as: "Beneficiary",
-        foreignKey: "beneficiary_id",
-      });
+      // Donation.belongsTo(models.Wallet, {
+      //   as: "Donor",
+      //   foreignKey: "donor_id",
+      // });
+      // Donation.belongsTo(models.Wallet, {
+      //   as: "Beneficiary",
+      //   foreignKey: "beneficiary_id",
+      // });
     }
   }
   Donation.init(

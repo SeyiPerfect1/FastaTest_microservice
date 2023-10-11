@@ -1,7 +1,7 @@
 "use strict";
 const { Model } = require("sequelize");
 const { v4: uuidv4 } = require("uuid");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 require("dotenv").config();
 
 module.exports = (sequelize, DataTypes) => {
@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // Define associations here
-      User.hasOne(models.Wallet, { foreignKey: "user_id" });
+      // User.hasOne(models.Wallet, { foreignKey: "user_id" });
     }
 
     // Define a pre-hook to hash the password before saving

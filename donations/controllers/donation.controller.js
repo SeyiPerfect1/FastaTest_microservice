@@ -1,7 +1,5 @@
-const DonationModel = require("../../models").Donation;
-const WalletModel = require("../../models").Wallet;
-const UserModel = require("../../models").User;
-const bcrypt = require("bcrypt");
+const DonationModel = require("../db/models").Donation;
+const bcrypt = require("bcryptjs");
 const send_email = require("../utility/mailer.utility");
 const { thank_you_message } = require("../utility/msg.utility");
 const build_query = require("../utility/pagaination");

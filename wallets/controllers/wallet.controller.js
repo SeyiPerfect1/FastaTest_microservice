@@ -1,9 +1,8 @@
 const { GenCode } = require("../utility/user.utility");
 require("dotenv").config();
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const log = require("../utility/logger");
-const WalletModel = require("../../models/").Wallet;
-const UserModel = require("../../models").User;
+const WalletModel = require("../db/models/").Wallet;
 
 /**
  * @description get wallet
